@@ -1,85 +1,63 @@
-# IT-Support-RAG
-Northstar Retail is a fictional, multi-location retailer whose employees need quick answers from internal operations documents, including store procedures, point-of-sale troubleshooting guides, inventory workflows, and employee policies.
+# Enterprise IT Support Agentic RAG Copilot
 
-Northstar Retail is a fictional, multi-location retailer whose employees need quick answers from internal operations documents, including store procedures, point-of-sale troubleshooting guides, inventory workflows, and employee policies.
+An end-to-end **Forward Deployed Engineer (FDE) project** that turns a notebook-style Agentic RAG workflow into a deployable internal product using **LangGraph, FastAPI, Pinecone, Groq, Tavily, HTML, CSS, and JavaScript**.
 
-AI-generated content may be incorrect.
-change it and give me
+---
 
-Retail Operations Knowledge Copilot — Agentic RAG
-Business Problem
-Northstar Retail is a fictional, multi-location retailer whose employees need quick answers from internal operations documents, including store procedures, point-of-sale troubleshooting guides, inventory workflows, and employee policies.
+## 1. Business Problem
 
-Employees often spend time searching across documents or asking support teams repetitive questions. This project provides an AI-powered knowledge assistant that searches the company’s private knowledge base first, evaluates whether the retrieved information is relevant, and uses public web search only when internal information is insufficient—for example, to find current guidance from a software vendor.
+### Customer
+**NovaRetail**, a fictional 3,000-employee retail company.
 
-Solution
-The system uses an agentic RAG workflow to route questions, retrieve and evaluate evidence, rewrite unclear queries, and generate answers grounded in available sources. It also includes an API, a web interface, document ingestion, and a decision trace to make the retrieval process easier to inspect.
+### Problem
+The internal IT team maintains many documents: VPN instructions, password rules, MFA policy, software installation rules, laptop troubleshooting guides, and service-desk runbooks.
 
-Example Scenarios
-Private knowledge base: “How do I process a return for an online order in store?”
-Private knowledge base: “What steps should I follow if the store’s point-of-sale terminal loses network connectivity?”
-External information: “Is there a current outage affecting our payment software provider?”
-Weak evidence: “The inventory system is behaving strangely. What should I check?”
-Resume Bullet
-Built a deployable agentic RAG copilot for retail operations using LangGraph, FastAPI, Pinecone, and Groq, with private-document retrieval, evidence grading, query rewriting, web-search fallback, and document ingestion.
-AI-generated content may be incorrect.
-give that detail flow and all which i gave you for the readme accordingly for this also
+Employees still create repetitive support tickets because:
 
-Retail Operations Knowledge Copilot
-An end-to-end Agentic RAG application that helps retail employees find answers in internal operations documents. The system searches the private knowledge base first, evaluates the retrieved evidence, and uses public web search only when internal information is insufficient.
+- They do not know where the correct document is.
+- Traditional keyword search returns too many results.
+- A normal chatbot may hallucinate an answer.
+- Internal documents can be incomplete or outdated.
+- Some questions require current vendor information from the public web.
 
-Built with LangGraph, FastAPI, Pinecone, Groq, Tavily, Hugging Face embeddings, HTML, CSS, and JavaScript.
-
-1. Business Problem
-Customer
-Northstar Retail is a fictional, multi-location retail company.
-
-Problem
-Store employees and operations teams rely on documents covering:
-
-Store procedures and opening or closing checklists
-Point-of-sale troubleshooting
-Returns and exchange workflows
-Inventory receiving and stock checks
-Employee policies and escalation procedures
-Vendor software guidance
-Employees may struggle to find the right document, receive too many irrelevant results from keyword search, or get unreliable answers from a basic chatbot. Some internal documents may also be incomplete or outdated, while certain questions require current public information from a vendor.
-
-Example
+### Example
 An employee asks:
 
-“How do I process an online order return in store?”
+> **“How do I connect to the company VPN from home?”**
 
-The answer should come from Northstar Retail’s private operations knowledge base. The system should not need to search the public internet.
+The answer exists in the private company KB, so the system should **not search the public internet**.
 
 Another employee asks:
 
-“Is there a current outage affecting our payment software provider?”
+> **“What is the latest Microsoft Teams outage guidance?”**
 
-If the private knowledge base does not contain current outage information, the system should identify the lack of relevant internal evidence, search the web, evaluate the results, and clearly indicate that the answer uses external sources.
+The internal KB may not contain current outage information. The system should recognize weak private evidence, use an external search, grade that evidence, and answer with an external-source warning.
 
-Business Goal
-Build a retail operations copilot that:
+### Business Goal
+Build a secure IT Support Copilot that:
 
-Searches trusted company documents first.
-Evaluates whether retrieved evidence is relevant and sufficient.
-Uses web search only when private information is insufficient.
-Rewrites unclear questions and retries retrieval when appropriate.
-Generates answers grounded in retrieved information.
-Shows its decision path for transparency and debugging.
-Lets authorized staff add company documents.
-2. Why This Is an FDE Project
-A Forward Deployed Engineer project goes beyond creating an LLM notebook. It translates a customer’s workflow into a usable application.
+1. Searches trusted private knowledge first.
+2. Checks whether retrieved evidence is good enough.
+3. Uses web search only when private knowledge is insufficient.
+4. Rewrites weak queries and retries.
+5. Generates grounded answers.
+6. Shows the decision path for transparency and debugging.
+7. Lets authorized staff add new company documents.
 
-text
+---
 
+## 2. Why This Is an FDE Project
+
+A Forward Deployed Engineer does more than create an LLM notebook. The FDE must turn the customer's problem into a usable product.
+
+```text
 Customer Problem
       ↓
-Discovery and Requirements
+Discovery & Requirements
       ↓
 Solution Architecture
       ↓
-Data and Knowledge Integration
+Data / Knowledge Integration
       ↓
 Agentic RAG Development
       ↓
@@ -87,128 +65,165 @@ API Development
       ↓
 User Interface
       ↓
-Security, Audit, and Testing
+Security + Audit + Testing
       ↓
 Deployment
       ↓
-Observe and Improve
-This project demonstrates these layers through a customer-focused application, knowledge ingestion, an agentic retrieval workflow, an API, and a web interface.
+Observe + Improve
+```
 
-3. Architecture
-Mermaid Diagram
+This repository demonstrates each layer.
 
-POST to chat API
+---
 
-Retail Employee
+## 3. Simple Architecture
 
-HTML CSS JavaScript Web UI
+```text
+                   ┌─────────────────────┐
+                   │   Employee / User   │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │ HTML/CSS/JavaScript │
+                   │      Web UI         │
+                   └──────────┬──────────┘
+                              │ POST /api/chat
+                              ▼
+                   ┌─────────────────────┐
+                   │       FastAPI       │
+                   └──────────┬──────────┘
+                              │
+                              ▼
+                   ┌─────────────────────┐
+                   │     LangGraph       │
+                   │ Agentic RAG Control │
+                   └──────────┬──────────┘
+                              │
+               ┌──────────────┴──────────────┐
+               │                             │
+               ▼                             ▼
+       ┌───────────────┐              ┌──────────────┐
+       │ Private KB    │              │ Tavily Web   │
+       │ Pinecone      │              │ Search       │
+       └───────┬───────┘              └──────┬───────┘
+               │                             │
+               └──────────────┬──────────────┘
+                              ▼
+                     ┌────────────────┐
+                     │ Groq LLM       │
+                     │ Grounded Answer│
+                     └────────────────┘
+```
 
-FastAPI
+---
 
-LangGraph Agentic RAG Workflow
+## 4. Agentic RAG Workflow
 
-Pinecone Private Knowledge Base
+This follows the same core implementation pattern as the reference notebook.
 
-Tavily Web Search
-
-Groq LLM
-
-SQLite Decision Audit
-
-4. Agentic RAG Workflow
-The workflow routes questions, searches the private knowledge base, evaluates evidence, and selects the next action based on the result.
-
-text
-
+```text
 Question
    ↓
-Route Question
-   ├── Greeting or simple conversation → Direct Answer
+[1] Route Question
+   ├── Greeting / simple chat ─────────────→ Direct Answer
    │
-   └── Retail operations question
+   └── IT support question
                 ↓
-        Retrieve from private Pinecone KB
+[2] Retrieve from Private Pinecone KB
                 ↓
-        Grade private evidence
-          ┌─────┴─────┐
-          │           │
-        GOOD         WEAK
-          │           │
-          ▼           ▼
-   Generate from   Tavily web search
-   private KB           ↓
-                  Grade web evidence
-                    ┌───┴───┐
-                    │       │
-                  GOOD     WEAK
-                    │       │
-                    ▼       ▼
-              Generate    Rewrite query
-              web answer       ↓
-                         Retry private KB
+[3] Grade Private Evidence
+       ┌────────┴────────┐
+       │                 │
+     GOOD               WEAK
+       │                 │
+       ▼                 ▼
+Generate from KB    [4] Tavily Web Search
+                         ↓
+                  [5] Grade Web Evidence
+                    ┌────┴─────┐
+                    │          │
+                  GOOD        WEAK
+                    │          │
+                    ▼          ▼
+              Generate Web  [6] Rewrite Query
                                ↓
-                       Retry limit reached
+                         Retry Private KB
                                ↓
-                   Return insufficient evidence
-Why Agentic RAG?
-A basic RAG system typically follows this pattern:
+                        Max retry reached?
+                               ↓
+                    Insufficient Evidence
+```
 
-text
+### Why Agentic?
 
+Normal RAG does approximately this:
+
+```text
 Question → Retrieve → Generate
-This project adds decision-making steps:
+```
 
-text
+This project makes decisions:
 
+```text
 Question
  → Route
  → Retrieve
  → Evaluate evidence
- → Choose private KB or web search
- → Rewrite query if needed
- → Retry with a limit
- → Generate a grounded answer
-The workflow selects the next action based on the question and the quality of the evidence retrieved.
+ → Choose KB or Web
+ → Rewrite if needed
+ → Retry
+ → Generate grounded answer
+```
 
-5. Technology Stack
-Layer	Technology	Purpose
-Agent workflow	LangGraph	Stateful routing and conditional workflow decisions
-LLM	Groq	Question routing, evidence grading, query rewriting, and answer generation
-Embeddings	Hugging Face all-MiniLM-L6-v2	Local text embeddings with 384 dimensions
-Vector database	Pinecone	Stores and retrieves private company knowledge
-External search	Tavily	Searches the web when internal evidence is insufficient
-API	FastAPI	Provides chat, health, and document-ingestion endpoints
-Frontend	HTML, CSS, JavaScript	Provides the employee-facing web interface
-Audit	SQLite	Records basic query and decision-path information
-Packaging	Docker	Supports reproducible application deployment
-6. Project Structure
-text
+The system therefore controls **what to do next** based on its current state.
 
-FDE_Agentic_RAG_Retail_Copilot/
+---
+
+## 5. Main Technology Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Agent workflow | LangGraph | Stateful routing and conditional decisions |
+| LLM | Groq | Routing, grading, rewriting, answer generation |
+| Embeddings | HuggingFace `all-MiniLM-L6-v2` | Local 384-dimensional embeddings |
+| Vector DB | Pinecone | Private enterprise knowledge base |
+| External search | Tavily | Fallback when company KB is insufficient |
+| API | FastAPI | Backend and REST endpoints |
+| Frontend | HTML/CSS/JavaScript | Employee-facing interface |
+| Audit | SQLite | Basic decision-path logging |
+| Packaging | Docker | Reproducible deployment |
+
+---
+
+## 6. Project Structure
+
+```text
+FDE_Agentic_RAG_IT_Copilot/
 │
 ├── app/
 │   ├── api/
-│   │   └── routes.py              # Chat, health, and ingestion APIs
+│   │   └── routes.py              # Chat, health and ingestion APIs
 │   │
 │   ├── core/
 │   │   ├── config.py              # Environment configuration
 │   │   └── logging.py             # Logging configuration
 │   │
 │   ├── rag/
-│   │   ├── state.py               # LangGraph state and structured decisions
-│   │   ├── vectorstore.py         # Pinecone and embedding integration
-│   │   └── workflow.py            # Agentic RAG graph
+│   │   ├── state.py               # LangGraph state + structured decisions
+│   │   ├── vectorstore.py         # Pinecone + embeddings
+│   │   └── workflow.py            # Complete Agentic RAG graph
 │   │
 │   ├── services/
 │   │   ├── audit.py               # SQLite query audit
-│   │   └── ingestion.py           # Document loading and chunking
+│   │   └── ingestion.py           # PDF/TXT/MD/DOCX loading + chunking
 │   │
 │   └── main.py                    # FastAPI application
 │
 ├── data/
 │   └── sample_kb/
-│       ├── store_operations_handbook.md
-│       └── retail_support_runbook.md
+│       ├── company_it_handbook.md
+│       └── service_desk_runbook.md
 │
 ├── static/
 │   ├── css/style.css
@@ -227,226 +242,302 @@ FDE_Agentic_RAG_Retail_Copilot/
 ├── requirements.txt
 ├── run.py
 └── README.md
-7. Setup
-Step 1 — Create a virtual environment
-bash
+```
 
+---
+
+## 7. Setup
+
+### Step 1 — Create virtual environment
+
+```bash
 python -m venv venv
-Activate it on Windows:
+```
 
-bash
+Windows:
 
+```bash
 venv\Scripts\activate
-Activate it on macOS or Linux:
+```
 
-bash
+macOS/Linux:
 
+```bash
 source venv/bin/activate
-Step 2 — Install dependencies
-bash
+```
 
+### Step 2 — Install dependencies
+
+```bash
 pip install -r requirements.txt
-Step 3 — Configure environment variables
-Create a .env file in the project root:
+```
 
-env
+### Step 3 — Configure environment
 
-# LLM
+Create a `.env` file in the project root directory with the following variables:
+
+```env
+# LLM API Keys
 GROQ_API_KEY=your_groq_api_key_here
-GROQ_MODEL=openai/gpt-oss-20b
+OPENAI_API_KEY=your_openai_api_key_here
 
-# External search
+# External Search
 TAVILY_API_KEY=your_tavily_api_key_here
 
-# Vector database
+# Vector Database (Pinecone)
 PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=retail-operations-rag
-PINECONE_NAMESPACE=northstar-retail-kb
+PINECONE_INDEX_NAME=fde-it-support-rag
+PINECONE_NAMESPACE=company-it-kb
 
-# Embeddings
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+# LLM Models
+GROQ_MODEL=openai/gpt-oss-20b
+OPENAI_MODEL=gpt-4o-mini
+EMBEDDING_MODEL=text-embedding-3-small
 
 # Security
-ADMIN_API_KEY=replace-with-a-secure-random-value
+ADMIN_API_KEY=change-me-in-production
 
-# Application settings
+# Application Settings
 APP_ENV=development
-The example uses the Hugging Face all-MiniLM-L6-v2 embedding model described in this README. If your implementation uses an OpenAI embedding model instead, update the configuration and Pinecone index dimensions to match the model used by your code.
+```
 
-Environment variable reference
-Variable	Description	Required
-GROQ_API_KEY	API key for the Groq LLM	Yes
-GROQ_MODEL	Groq model identifier	Optional
-TAVILY_API_KEY	API key for Tavily web search	Yes
-PINECONE_API_KEY	API key for Pinecone	Yes
-PINECONE_INDEX_NAME	Pinecone index name	Optional
-PINECONE_NAMESPACE	Namespace used for private retail documents	Optional
-EMBEDDING_MODEL	Hugging Face embedding model identifier	Optional
-ADMIN_API_KEY	Secret key for document-ingestion endpoints	Recommended
-APP_ENV	Application environment, such as development or production	Optional
-Security notes
-Never commit .env or API keys to version control.
-Add .env to .gitignore.
-Use a unique, secure value for ADMIN_API_KEY.
-Restrict credentials to the services that need them.
-Use synthetic or public documents in this repository; do not upload confidential company information.
-Add production-grade authentication and authorization before exposing admin or ingestion endpoints.
-Step 4 — Load sample knowledge-base documents
-bash
+#### Environment Variable Reference
 
+| Variable | Description | Example | Required |
+|---|---|---|---|
+| `GROQ_API_KEY` | API key for Groq LLM (routing, grading, generation) | `gsk_...` | ✅ Yes |
+| `OPENAI_API_KEY` | API key for OpenAI (embeddings and fallback LLM) | `sk-...` | ✅ Yes |
+| `TAVILY_API_KEY` | API key for Tavily web search | `tvly-...` | ✅ Yes |
+| `PINECONE_API_KEY` | API key for Pinecone vector database | `pckey-...` | ✅ Yes |
+| `PINECONE_INDEX_NAME` | Pinecone index name | `fde-it-support-rag` | ⚠️ Optional (default: `fde-it-support-rag`) |
+| `PINECONE_NAMESPACE` | Pinecone namespace for document isolation | `company-it-kb` | ⚠️ Optional (default: `company-it-kb`) |
+| `GROQ_MODEL` | Groq model identifier | `openai/gpt-oss-20b` | ⚠️ Optional (default: `openai/gpt-oss-20b`) |
+| `OPENAI_MODEL` | OpenAI model identifier | `gpt-4o-mini` | ⚠️ Optional (default: `gpt-4o-mini`) |
+| `EMBEDDING_MODEL` | Embedding model for vectorization | `text-embedding-3-small` | ⚠️ Optional (default: `text-embedding-3-small`) |
+| `ADMIN_API_KEY` | Secret key for admin endpoints (document ingestion) | `your-secure-key` | ⚠️ Optional (default: `change-me`) |
+| `APP_ENV` | Application environment | `development` or `production` | ⚠️ Optional (default: `development`) |
+
+**⚠️ Important Security Notes:**
+
+- Never commit `.env` to version control. Add it to `.gitignore`.
+- Change `ADMIN_API_KEY` to a secure random value in production.
+- Use environment variables instead of hardcoding secrets.
+- Restrict API key access to only the services that need them.
+
+### Step 4 — Load sample company knowledge
+
+```bash
 python ingest_sample_kb.py
-The ingestion process follows this pattern:
+```
 
-text
+This demonstrates the RAG ingestion pipeline:
 
-Retail Operations Documents
+```text
+Company Documents
    ↓
 Load Documents
    ↓
-Split Text into Chunks
+Chunk Text
    ↓
-Create Hugging Face Embeddings
+HuggingFace Embeddings
    ↓
-Store Vectors in Pinecone
-Step 5 — Run the application
-bash
+Pinecone Vector Database
+```
 
+### Step 5 — Run the application
+
+```bash
 python run.py
-Open the web application:
+```
 
-text
+Open:
 
+```text
 http://127.0.0.1:8000
-Open the FastAPI API documentation:
+```
 
-text
+FastAPI API docs:
 
+```text
 http://127.0.0.1:8000/docs
-8. Demo Scenarios
-Demo A — Private knowledge-base answer
+```
+
+---
+
+## 8. Classroom Demo Scenarios
+
+### Demo A — Private KB Success
+
 Ask:
 
-How do I process an online order return in store?
+> **How do I connect to the company VPN from home?**
 
 Expected path:
 
-text
+```text
+Router → KB
+Private KB Retrieval
+KB Grade → GOOD
+Generate from Private KB
+```
 
-Router → Private KB
-Private KB retrieval
-Evidence grade → GOOD
-Generate answer from private KB
-Teaching point: The system prioritizes approved internal retail procedures and does not need to call web search when the private knowledge base contains sufficient evidence.
+Teaching point:
 
-Demo B — Store operations policy
+> Trusted internal company knowledge is preferred. No public web call is necessary.
+
+---
+
+### Demo B — Company Policy Question
+
 Ask:
 
-What should I do if a customer’s payment is declined at checkout?
+> **Can IT support ask me to share my MFA code?**
+
+The internal handbook says employees must never share passwords or MFA codes with support personnel.
 
 Expected path:
 
-text
+```text
+Router → KB
+Private KB Retrieval
+KB Grade → GOOD
+Private KB Answer
+```
 
-Router → Private KB
-Private KB retrieval
-Evidence grade → GOOD
-Generate answer from private KB
-Teaching point: RAG lets the system answer questions using company-specific documents that were not part of the model’s training data.
+Teaching point:
 
-Demo C — Current external information
+> RAG allows the model to answer using company-specific information it was never trained on.
+
+---
+
+### Demo C — External / Current Information
+
 Ask:
 
-Is there a current outage affecting our payment software provider?
+> **What is the latest Microsoft Teams outage guidance?**
 
-Expected path when the internal knowledge base does not contain current outage information:
+Expected path when internal documents do not answer it:
 
-text
+```text
+Router → KB
+Private KB Retrieval
+KB Grade → WEAK
+Tavily Search
+Web Grade → GOOD
+Web Answer
+```
 
-Router → Private KB
-Private KB retrieval
-Private evidence grade → WEAK
-Tavily web search
-Web evidence grade → GOOD
-Generate answer with external-source warning
-Teaching point: The system can use public information when internal documents do not provide sufficient evidence, while distinguishing external information from company policy.
+Teaching point:
 
-Demo D — Query rewriting
-Ask a deliberately vague question:
+> Agentic RAG can choose another information source rather than blindly answering from irrelevant vectors.
 
-The checkout system is acting strangely after the update. What should I do?
+---
 
-If the initial private and web retrieval results are weak, the workflow can rewrite the query and retry retrieval.
+### Demo D — Query Rewrite
 
-Teaching point: The workflow can improve a vague search query and retry while using a retry limit to prevent loops.
+Ask a deliberately vague question such as:
 
-Demo E — Direct conversation
+> **My work communication app is acting strange after the new update. What should I do?**
+
+If both KB and first external retrieval are weak, the workflow can rewrite the query and retry.
+
+Teaching point:
+
+> Retrieval failure does not immediately mean failure. An agent can improve the search query and try again while using a retry guard to avoid loops.
+
+---
+
+### Demo E — Direct Conversation
+
 Ask:
 
-Hello!
+> **Hello!**
 
 Expected path:
 
-text
+```text
+Router → DIRECT
+Direct Answer
+```
 
-Router → Direct answer
-Teaching point: Simple conversation does not need to trigger vector retrieval or web search.
+Teaching point:
 
-9. Document Upload Demo
-The interface includes an Add Company Document option for authorized staff.
+> Not every message should trigger expensive vector search or web search.
 
-Supported file types:
+---
 
-text
+## 9. Document Upload Demo
 
-.pdf
-.txt
-.md
-.docx
-The backend processes an uploaded document as follows:
+The sidebar contains **Add Company Document**.
 
-text
+Use the `ADMIN_API_KEY` from `.env`.
 
+Upload one of:
+
+- `.pdf`
+- `.txt`
+- `.md`
+- `.docx`
+
+The backend performs:
+
+```text
 Upload
   ↓
-Validate File Type
+Validate Type
   ↓
-Load Document Text
+Load Text
   ↓
-Split into Chunks
+Recursive Chunking
   ↓
-Create Embeddings
+Embeddings
   ↓
-Store in Pinecone
+Pinecone Indexing
   ↓
-Make Available for Retrieval
-This lets authorized staff add or update retail procedures without editing application code.
+Immediately Available for Retrieval
+```
 
-10. API Endpoints
-GET /api/health
-Returns the application health status.
+This is useful in an FDE demonstration because the customer does not want to edit Python every time a new policy is published.
 
-POST /api/chat
-Example request:
+---
 
-json
+## 10. API Endpoints
 
+### `GET /api/health`
+
+Health check.
+
+### `POST /api/chat`
+
+Request:
+
+```json
 {
-  "question": "How do I process an online order return in store?"
+  "question": "How do I reset my company password?"
 }
-Example response:
+```
 
-json
+Response contains:
 
+```json
 {
-  "answer": "Follow the online order return procedure in the store operations handbook...",
+  "answer": "...",
   "source_used": "private_kb",
   "trace": [
-    "Router selected private knowledge base",
-    "Retrieved relevant retail operations documents",
-    "Private evidence grade: GOOD",
-    "Generated answer from private knowledge base"
+    "Router → KB",
+    "Private KB retrieval → 4 chunks",
+    "KB evidence grade → GOOD",
+    "Answer generation → PRIVATE KB"
   ],
   "citations": []
 }
-POST /api/ingest
-Uploads a document and adds its chunks to the Pinecone knowledge base. This endpoint is protected by the X-Admin-Key request header.
+```
+
+### `POST /api/ingest`
+
+Protected by the `X-Admin-Key` request header.
+
+Uploads a document and adds its chunks to Pinecone.
+
+---
+
